@@ -62,7 +62,7 @@ class _homeState extends State<home> {
       String context, String question) async {
     final dio = Dio();
     final response = await dio.post(
-        'https://b0ab-157-32-0-186.ngrok-free.app/predict',
+        'https://feea-49-34-212-132.ngrok-free.app/predict',
         data: {"context": context, "question": question});
 
     print('predt: ${response.data["prediction"]}');
