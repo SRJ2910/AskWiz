@@ -1,9 +1,10 @@
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
 import 'package:dopanet/page/info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_ml_kit/google_ml_kit.dart';
+import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
 
 class home extends StatefulWidget {
@@ -57,12 +58,27 @@ class _homeState extends State<home> {
     print(text);
   }
 
+  /// get link from firebase -> ngrok link
+  Future<String> getLink() async {
+    String link = "";
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    link = await firestore
+        .collection("id")
+        .get()
+        .then((value) => value.docs[0]["link"]);
+
+    return link;
+  }
+
   /// Extract data from server Roberta model
   Future<List<String>> extractDatafromserver(
       String context, String question) async {
     final dio = Dio();
-    final response = await dio.post(
-        'https://feea-49-34-212-132.ngrok-free.app/predict',
+
+    String link = await getLink();
+    print(link);
+
+    final response = await dio.post(link + "/predict",
         data: {"context": context, "question": question});
 
     print('predt: ${response.data["prediction"]}');
@@ -141,7 +157,7 @@ class _homeState extends State<home> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text("DopaNet"),
+          title: const Text("AskWiz"),
           actions: [
             IconButton(
                 onPressed: () {
